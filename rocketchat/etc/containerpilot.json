@@ -1,0 +1,19 @@
+{
+  "consul": "consul:8500",
+  "services": [
+    {
+      "name": "rocketchat",
+      "port": 3000,
+      "health": "/usr/bin/curl -o /dev/null --fail -s http://localhost:3000/",
+      "poll": 3,
+      "ttl": 10
+    }
+  ],
+  "backends": [
+    {
+      "name": "mongo",
+      "poll": 30,
+      "onChange": "pkill -SIGHUP node"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "consul": "consul:8500",
+  "services": [
+    {
+      "name": "mongo",
+      "port": 27017,
+      "health": "echo 'db.stats().ok' | mongo 127.0.0.1:27017/rocketchat --quiet",
+      "poll": 3,
+      "ttl": 10
+    }
+  ]
+}
