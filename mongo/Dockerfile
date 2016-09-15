@@ -15,6 +15,7 @@ RUN export CP_SHA1=c31333047d58ba09d647d717ae1fc691133db6eb \
     && rm /tmp/containerpilot.tar.gz
 
 COPY etc/containerpilot.json /etc
+COPY etc/mongod.conf /etc
 
 ENTRYPOINT []
-CMD [ "/bin/containerpilot", "mongod", "--smallfiles", "--oplogSize", "128" ]
+CMD [ "/bin/containerpilot", "mongod", "--config", "/etc/mongod.conf" ]
