@@ -1,0 +1,27 @@
+consul:
+  extends:
+    file: docker-compose.yml
+    service: consul
+  ports:
+    - 8500:8500
+mongo:
+  extends:
+    file: docker-compose.yml
+    service: mongo
+  environment:
+    - CONSUL=localhost
+  links:
+    - consul:consul
+rocketchat:
+  extends:
+    file: docker-compose.yml
+    service: rocketchat
+  links:
+    - consul:consul
+    - mongo:mongo
+  environment:
+    - PORT=3000
+    - ROOT_URL=http://localhost:3000
+    - CONSUL=consul
+    - MONGO_URL=mongodb://mongo:27017/rocketchat
+

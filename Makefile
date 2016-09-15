@@ -3,4 +3,4 @@ SHELL := /bin/bash
 .PHONY: check
 
 check:
-	@./bin/check.sh
+	@./bin/setup.sh

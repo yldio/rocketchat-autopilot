@@ -1,43 +1,42 @@
-version: "2"
-
-services:
-  consul:
-      image: progrium/consul:latest
-      restart: always
-      mem_limit: 128m
-      expose:
-        - 53
-        - 8300
-        - 8301
-        - 8302
-        - 8400
-        - 8500
-      ports:
-        - 8500:8500
-      command: -server -bootstrap -ui-dir /ui
-  mongo:
-    build: ./mongo
-    image: mongo
-# volumes:
-#    - ./data/runtime/db:/data/db
-#    - ./data/dump:/dump
-    links:
-      - consul:consul
-    ports:
-      - 27017:27017
-
-  rocketchat:
-    build: ./rocketchat
-    image: rocketchat
-# volumes:
-#    - ./uploads:/app/uploads
-    environment:
-      - PORT=3000
-      - ROOT_URL=http://localhost:3000
-      - MONGO_URL=mongodb://mongo:27017/rocketchat
-    links:
-      - consul:consul
-      - mongo:mongo
-    ports:
-      - 3000:3000
-
+#############################################################################
+#  CONSUL
+#############################################################################
+consul:
+  image: progrium/consul:latest
+  labels:
+    - triton.cns.services=consul
+  restart: always
+  mem_limit: 128m
+  expose:
+    - 53
+    - 8300
+    - 8301
+    - 8302
+    - 8400
+    - 8500
+  env_file: .env
+  ports:
+    - 8500:8500
+  command: -server -bootstrap -ui-dir /ui
+#############################################################################
+#  MONGO
+#############################################################################
+mongo:
+  build: ./mongo
+  labels:
+    - triton.cns.services=mongo
+  env_file: .env
+  ports:
+    - 27017:27017
+#############################################################################
+#  ROCKET.CHAT
+#############################################################################
+rocketchat:
+  build: ./rocketchat
+  labels:
+    - triton.cns.services=rocketchat
+  env_file: .env
+  environment:
+    - PORT=3000
+  ports:
+    - 3000:3000

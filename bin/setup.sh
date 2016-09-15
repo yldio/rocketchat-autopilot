@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# check.sh - Checks that all the required tools are present and that they are
+# setup.sh - Checks that all the required tools are present and that they are
 #            appropriately configured for deploying to Triton.
 #
 # Adapted from https://github.com/autopilotpattern/mysql/blob/master/setup.sh
@@ -55,8 +55,18 @@ ensure_docker_config_matches_triton_config_and_capture_triton_details() {
 
 ensure_triton_cns_is_enabled() {
   local triton_cns_enabled=$(triton account get | awk -F": " '/cns/{print $2}')
-  [[ ! "true" == "$triton_cns_enabled" ]] && {
+  [[ "$triton_cns_enabled" == "true" ]] || {
     die "Triton CNS is required and not enabled."
+  }
+}
+
+write_env_file() {
+  [[ -f .env ]] || {
+    echo '# Consul discovery via Triton CNS' >> .env
+    echo CONSUL=consul.svc.${TRITON_ACCOUNT}.${TRITON_DC}.cns.joyent.com >> .env
+    echo MONGO_URL=mongodb://mongo.svc.${TRITON_ACCOUNT}.${TRITON_DC}.cns.joyent.com:27017/rocketchat >> .env
+    echo ROOT_URL=http://rocketchat.svc.${TRITON_ACCOUNT}.${TRITON_DC}.cns.joyent.com:3000/ >> .env
+    echo >> .env
   }
 }
 
@@ -72,3 +82,4 @@ ensure_prerequisites() {
 ensure_prerequisites
 ensure_docker_config_matches_triton_config_and_capture_triton_details
 ensure_triton_cns_is_enabled
+write_env_file
